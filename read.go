@@ -61,5 +61,5 @@ func main() {
 		}
 	}
 
-	process.Dump(data, os.Stdout)
+	process.DumpBlocks(data, os.Stdout)
 }

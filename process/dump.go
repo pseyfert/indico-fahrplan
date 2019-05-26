@@ -20,10 +20,30 @@ package process
 
 import (
 	"fmt"
+	"github.com/pseyfert/go-dayvider"
 	"github.com/pseyfert/indico-fahrplan/indicoinput"
 	"io"
 	"time"
 )
+
+func DumpBlocks(data indicoinput.Apiresult, w io.Writer) {
+	bookings := make([]dayvider.Booking, 0, len(data.Results.Conference.Contributions.Contributions))
+
+	for _, contrib := range data.Results.Conference.Contributions.Contributions {
+		start, err := time.Parse(time.RFC3339, contrib.Start)
+		if err == nil {
+			end := time.Unix(start.Unix()+int64(60*contrib.Duration), 0)
+			start = time.Unix(start.Unix(), 0)
+			bookings = append(bookings, dayvider.Booking{Start: start, End: end})
+		}
+	}
+	event := dayvider.NewEvent(bookings)
+	blocks := event.Blockify()
+
+	for _, block := range blocks {
+		fmt.Fprintf(w, "session block from %s to %s\n", block.Start.String(), block.End.String())
+	}
+}
 
 func Dump(data indicoinput.Apiresult, w io.Writer) {
 	for _, contrib := range data.Results.Conference.Contributions.Contributions {
