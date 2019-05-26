@@ -22,10 +22,10 @@ import (
 	"flag"
 	"fmt"
 	"github.com/pseyfert/indico-fahrplan/indicoinput"
+	"github.com/pseyfert/indico-fahrplan/process"
 	"log"
 	"net/http"
 	"strconv"
-	"time"
 )
 
 func doit(w http.ResponseWriter, id int, querymap map[string]string) error {
@@ -33,15 +33,8 @@ func doit(w http.ResponseWriter, id int, querymap map[string]string) error {
 	if err != nil {
 		return err
 	}
-	for _, contrib := range data.Results.Conference.Contributions.Contributions {
-		t, err := time.Parse(time.RFC3339, contrib.Start)
 
-		if err != nil {
-			fmt.Fprintf(w, "YYYY-MM-DDTHH:MM:SS+HH:MM %s\n", contrib.Title)
-		} else {
-			fmt.Fprintf(w, "%s %s\n", t.String(), contrib.Title)
-		}
-	}
+	process.Dump(data, w)
 	return nil
 }
 

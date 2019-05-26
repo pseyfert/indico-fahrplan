@@ -20,11 +20,11 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
-	"time"
+	"os"
 
 	"github.com/pseyfert/indico-fahrplan/indicoinput"
+	"github.com/pseyfert/indico-fahrplan/process"
 )
 
 func main() {
@@ -61,13 +61,5 @@ func main() {
 		}
 	}
 
-	for _, contrib := range data.Results.Conference.Contributions.Contributions {
-		t, err := time.Parse(time.RFC3339, contrib.Start)
-
-		if err != nil {
-			fmt.Printf("YYYY-MM-DDTHH:MM:SS+HH:MM %s\n", contrib.Title)
-		} else {
-			fmt.Printf("%s %s\n", t.String(), contrib.Title)
-		}
-	}
+	process.Dump(data, os.Stdout)
 }
