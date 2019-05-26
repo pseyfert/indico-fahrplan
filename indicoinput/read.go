@@ -26,20 +26,27 @@ import (
 	"time"
 )
 
-func Cernquery(eventid int) (Apiresult, error) {
+func Cernquery(eventid int, extravals map[string]string) (Apiresult, error) {
 	var data Apiresult
 	c := http.Client{
 		Timeout: 600 * time.Second,
 	}
 
-	requrl := fmt.Sprintf("https://indico.cern.ch/export/event/%d.xml?detail=contributions", eventid)
+	requrl := fmt.Sprintf("https://indico.cern.ch/export/event/%d.xml", eventid)
 	req, err := http.NewRequest("GET", requrl, nil)
+
+	q := req.URL.Query()
+	q.Add("detail", "contributions")
+	for k, v := range extravals {
+		q.Add(k, v)
+	}
+	req.URL.RawQuery = q.Encode()
+
 	if err != nil {
 		return data, err
 	}
 
 	req.Header.Set("User-Agent", "fahrplan-app")
-	req.Header.Set("detail", "contributions")
 	response, err := c.Do(req)
 	if err != nil {
 		return data, err

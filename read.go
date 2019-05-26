@@ -31,15 +31,26 @@ func main() {
 	var eventid int
 	var local bool
 	var xmlFileName string
+	var apikey string
+	var signature string
 	flag.IntVar(&eventid, "i", 708041, "indico.cern.ch event id")
 	flag.BoolVar(&local, "l", false, "run from local file")
 	flag.StringVar(&xmlFileName, "f", "./samples/indico.event.detail.contributions.xml", "default filename")
+	flag.StringVar(&apikey, "apikey", "", "indico api key (copy and paste from website)")
+	flag.StringVar(&signature, "signature", "", "indico signature (copy and paste from website)")
 	flag.Parse()
 
 	var data indicoinput.Apiresult
 	var err error
+	querymap := make(map[string]string)
+	if signature != "" {
+		querymap["signature"] = signature
+	}
+	if apikey != "" {
+		querymap["apikey"] = apikey
+	}
 	if !local {
-		data, err = indicoinput.Cernquery(eventid)
+		data, err = indicoinput.Cernquery(eventid, querymap)
 		if err != nil {
 			log.Fatalf("%v", err)
 		}
