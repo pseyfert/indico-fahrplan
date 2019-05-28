@@ -67,6 +67,3 @@ func Dump(data indicoinput.Apiresult, w io.Writer) {
 	}
 }
 
-func main() {
-	fmt.Println("vim-go")
-}
