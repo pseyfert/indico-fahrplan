@@ -20,12 +20,25 @@ package indicoinput
 
 import (
 	"encoding/xml"
+	"time"
 )
 
 type Apiresult struct {
 	XMLName xml.Name `xml:"httpapiresult"`
 	Count   int      `xml:"count"`
 	Results Results  `xml:"results"`
+}
+
+func (data *Apiresult) FillTimes() {
+	for i, contrib := range data.Results.Conference.Contributions.Contributions {
+		t, err := time.Parse(time.RFC3339, contrib.Start)
+		if err == nil {
+			data.Results.Conference.Contributions.Contributions[i].StartTime = t
+			data.Results.Conference.Contributions.Contributions[i].TimeLess = false
+		} else {
+			data.Results.Conference.Contributions.Contributions[i].TimeLess = true
+		}
+	}
 }
 
 type Results struct {
@@ -48,7 +61,9 @@ type Contribution struct {
 	XMLName xml.Name `xml:"contribution"`
 	Id      int      `xml:"id,attr"`
 	// Start       time.Time `xml:"startDate"` // datetime
-	Start       string   `xml:"startDate"` // datetime
+	Start       string `xml:"startDate"` // datetime
+	StartTime   time.Time
+	TimeLess    bool
 	Duration    int      `xml:"duration"`
 	Title       string   `xml:"title"`
 	Location    string   `xml:"location"`

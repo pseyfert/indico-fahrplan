@@ -27,17 +27,8 @@ import (
 )
 
 func DumpBlocks(data indicoinput.Apiresult, w io.Writer) {
-	bookings := make([]dayvider.Booking, 0, len(data.Results.Conference.Contributions.Contributions))
-
-	for _, contrib := range data.Results.Conference.Contributions.Contributions {
-		start, err := time.Parse(time.RFC3339, contrib.Start)
-		if err == nil {
-			start = time.Unix(start.Unix(), 0)
-			end := start.Add(time.Duration(contrib.Duration) * time.Minute)
-			bookings = append(bookings, dayvider.Booking{Start: start, End: end})
-		}
-	}
-	event := dayvider.NewEvent(bookings)
+	data.FillTimes()
+	event := IndicoToDayvider(data)
 	blocks := event.Blockify()
 
 	for _, block := range blocks {
@@ -50,6 +41,18 @@ func DumpBlocks(data indicoinput.Apiresult, w io.Writer) {
 	}
 
 	fmt.Fprintf(w, "\n\nFirst day should end at %s\n", eod.String())
+
+	days, err := IndicoToDays(data)
+	if err != nil {
+		fmt.Fprintf(w, "unexpected error: %v\n", err)
+		return
+	}
+	for i, day := range days {
+		fmt.Fprintf(w, " === Day %d === \n", i+1)
+		for _, contrib := range day {
+			fmt.Fprintf(w, "%s - %s: %s\n", contrib.StartTime.Format("15:04"), contrib.StartTime.Add(time.Duration(contrib.Duration)*time.Minute).Format("15:04"), contrib.Title)
+		}
+	}
 }
 
 func Dump(data indicoinput.Apiresult, w io.Writer) {
