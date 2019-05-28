@@ -61,5 +61,5 @@ func main() {
 		}
 	}
 
-	process.DumpBlocks(data, os.Stdout)
+	process.DumpFahrplan(data, os.Stdout)
 }

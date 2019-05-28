@@ -19,6 +19,7 @@
 package process
 
 import (
+	"encoding/xml"
 	"fmt"
 	dayvider "github.com/pseyfert/go-dayvider"
 	"github.com/pseyfert/indico-fahrplan/indicoinput"
@@ -67,3 +68,17 @@ func Dump(data indicoinput.Apiresult, w io.Writer) {
 	}
 }
 
+func DumpFahrplan(data indicoinput.Apiresult, w io.Writer) {
+	fahrplan, err := FahrplanFromApi(data)
+	if err != nil {
+		fmt.Fprintf(w, "an error occured:\n%v\n", err)
+		return
+	}
+
+	enc := xml.NewEncoder(w)
+	enc.Indent("  ", "    ")
+	if err := enc.Encode(fahrplan); err != nil {
+		fmt.Fprintf(w, "encoding error: %v\n", err)
+	}
+	fmt.Fprintf(w, "\n")
+}

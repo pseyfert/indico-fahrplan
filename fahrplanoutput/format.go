@@ -26,7 +26,7 @@ import (
 type Schedule struct {
 	XMLName    xml.Name   `xml:"schedule"`
 	Conference Conference `xml:"conference"`
-	Days       Day        `xml:"day"`
+	Days       []Day      `xml:"day"`
 }
 
 type Day struct {
