@@ -21,17 +21,16 @@ package process
 import (
 	dayvider "github.com/pseyfert/go-dayvider"
 	"github.com/pseyfert/indico-fahrplan/indicoinput"
-	"time"
 )
 
 func IndicoToDayvider(data indicoinput.Apiresult) dayvider.Event {
 	bookings := make([]dayvider.Booking, 0, len(data.Results.Conference.Contributions.Contributions))
 
+	data.FillTimes()
 	for _, contrib := range data.Results.Conference.Contributions.Contributions {
-		start, err := time.Parse(time.RFC3339, contrib.Start)
-		if err == nil {
-			start = time.Unix(start.Unix(), 0)
-			end := start.Add(time.Duration(contrib.Duration) * time.Minute)
+		if !contrib.TimeLess {
+			start := contrib.StartTime
+			end := contrib.EndTime
 			bookings = append(bookings, dayvider.Booking{Start: start, End: end})
 		}
 	}

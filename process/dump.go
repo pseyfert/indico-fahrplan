@@ -50,7 +50,7 @@ func DumpBlocks(data indicoinput.Apiresult, w io.Writer) {
 	for i, day := range days {
 		fmt.Fprintf(w, " === Day %d === \n", i+1)
 		for _, contrib := range day {
-			fmt.Fprintf(w, "%s - %s: %s\n", contrib.StartTime.Format("15:04"), contrib.StartTime.Add(time.Duration(contrib.Duration)*time.Minute).Format("15:04"), contrib.Title)
+			fmt.Fprintf(w, "%s - %s: %s\n", contrib.StartTime.Format("15:04"), contrib.EndTime.Format("15:04"), contrib.Title)
 		}
 	}
 }

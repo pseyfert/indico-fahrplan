@@ -34,6 +34,7 @@ func (data *Apiresult) FillTimes() {
 		t, err := time.Parse(time.RFC3339, contrib.Start)
 		if err == nil {
 			data.Results.Conference.Contributions.Contributions[i].StartTime = t
+			data.Results.Conference.Contributions.Contributions[i].EndTime = t.Add(time.Duration(contrib.Duration) * time.Minute)
 			data.Results.Conference.Contributions.Contributions[i].TimeLess = false
 		} else {
 			data.Results.Conference.Contributions.Contributions[i].TimeLess = true
@@ -63,6 +64,7 @@ type Contribution struct {
 	// Start       time.Time `xml:"startDate"` // datetime
 	Start       string `xml:"startDate"` // datetime
 	StartTime   time.Time
+	EndTime     time.Time
 	TimeLess    bool
 	Duration    int      `xml:"duration"`
 	Title       string   `xml:"title"`

@@ -20,6 +20,7 @@ package fahrplanoutput
 
 import (
 	"encoding/xml"
+	"time"
 )
 
 type Schedule struct {
