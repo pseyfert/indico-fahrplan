@@ -38,6 +38,8 @@ type Schedule struct {
 
 type Day struct {
 	XMLName xml.Name  `xml:"day"`
+	Date    string    `xml:"date,attr"` // ISO-9601 day
+	Index   int       `xml:"index,attr"`
 	Start   time.Time `xml:"start,attr"`
 	End     time.Time `xml:"end,attr"`
 	Rooms   []Room    `xml:"room"`
@@ -54,6 +56,7 @@ type Event struct {
 	Guid        string      `xml:"guid,attr"`
 	Id          int         `xml:"id,attr"`
 	Date        time.Time   `xml:"date"`
+	Start       string      `xml:"start"`
 	Duration    string      `xml:"duration"` // hh:mm
 	Title       string      `xml:"title"`
 	Track       string      `xml:"track"`

@@ -63,12 +63,15 @@ func FahrplanFromApi(data indicoinput.Apiresult) (retval fahrplanoutput.Schedule
 	retval.Days = fdays
 
 	for i := range retval.Days {
+		retval.Days[i].Index = i + 1
 		retval.Days[i].Start = retval.Days[i].Start.In(data.Results.Conference.TimezoneLocation)
 		retval.Days[i].End = retval.Days[i].End.In(data.Results.Conference.TimezoneLocation)
+		retval.Days[i].Date = retval.Days[i].Start.Format("2006-01-02")
 
 		for j := range retval.Days[i].Rooms {
 			for k := range retval.Days[i].Rooms[j].Events {
 				retval.Days[i].Rooms[j].Events[k].Date = retval.Days[i].Rooms[j].Events[k].Date.In(data.Results.Conference.TimezoneLocation)
+				retval.Days[i].Rooms[j].Events[k].Start = retval.Days[i].Rooms[j].Events[k].Date.Format("15:04")
 			}
 		}
 	}
@@ -82,6 +85,7 @@ func FahrplanFromApi(data indicoinput.Apiresult) (retval fahrplanoutput.Schedule
 	retval.Conference.Acronym = "CERN"
 	retval.Conference.Title = "IndicoImport"
 	retval.Conference.Url = fmt.Sprintf("https://indico.cern.ch/event/%d", data.Results.Conference.Id)
+	retval.Version = "DebugDuty"
 	return
 }
 
