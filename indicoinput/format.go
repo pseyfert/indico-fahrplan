@@ -29,28 +29,54 @@ type Apiresult struct {
 	Results Results  `xml:"results"`
 }
 
-func (data *Apiresult) FillTimes() {
-	for i, contrib := range data.Results.Conference.Contributions.Contributions {
-		t, err := time.Parse(time.RFC3339, contrib.Start)
-		if err == nil {
-			data.Results.Conference.Contributions.Contributions[i].StartTime = t
-			data.Results.Conference.Contributions.Contributions[i].EndTime = t.Add(time.Duration(contrib.Duration) * time.Minute)
-			data.Results.Conference.Contributions.Contributions[i].TimeLess = false
-		} else {
-			data.Results.Conference.Contributions.Contributions[i].TimeLess = true
-		}
-	}
-}
-
 type Results struct {
 	XMLName    xml.Name   `xml:"results"`
 	Conference Conference `xml:"conference"`
 }
 
 type Conference struct {
-	XMLName       xml.Name      `xml:"conference"`
-	Id            int           `xml:"id,attr"`
-	Contributions Contributions `xml:"contributions"`
+	XMLName          xml.Name      `xml:"conference"`
+	Id               int           `xml:"id,attr"`
+	Contributions    Contributions `xml:"contributions"`
+	Start            string        `xml:"startDate"` // datetime
+	StartTime        time.Time
+	End              string `xml:"endDate"` // datetime
+	EndTime          time.Time
+	Timezone         string `xml:"timezone"`
+	TimezoneLocation *time.Location
+}
+
+func (data *Apiresult) Parse() {
+	data.Results.Conference.Parse()
+}
+
+func (c *Contribution) Parse() {
+	t, err := time.Parse(time.RFC3339, c.Start)
+	if err == nil {
+		c.StartTime = t
+		c.EndTime = t.Add(time.Duration(c.Duration) * time.Minute)
+		c.TimeLess = false
+	} else {
+		c.TimeLess = true
+	}
+}
+
+func (c *Conference) Parse() {
+	t, err := time.Parse(time.RFC3339, c.Start)
+	if err == nil {
+		c.StartTime = t
+	}
+	t, err = time.Parse(time.RFC3339, c.End)
+	if err == nil {
+		c.EndTime = t
+	}
+	for i, _ := range c.Contributions.Contributions {
+		c.Contributions.Contributions[i].Parse()
+	}
+	location, err := time.LoadLocation(c.Timezone)
+	if err == nil {
+		c.TimezoneLocation = location
+	}
 }
 
 type Contributions struct {

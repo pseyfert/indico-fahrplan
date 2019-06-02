@@ -23,10 +23,17 @@ import (
 	"time"
 )
 
+func (s *Schedule) Finalize() {
+	if s.Version == "" {
+		s.Version = "HEPWorldGomination"
+	}
+}
+
 type Schedule struct {
 	XMLName    xml.Name   `xml:"schedule"`
 	Conference Conference `xml:"conference"`
 	Days       []Day      `xml:"day"`
+	Version    string     `xml:"version"`
 }
 
 type Day struct {
@@ -66,5 +73,12 @@ type Attachment struct {
 }
 
 type Conference struct {
-	XMLName xml.Name `xml:"conference"`
+	XMLName      xml.Name `xml:"conference"`
+	Acronym      string   `xml:"acronym"`
+	Title        string   `xml:"title"`
+	Start        string   `xml:"start"` // ISO 8601 day
+	End          string   `xml:"end"`   // ISO 8601 day
+	Days         int      `xml:"days"`
+	SlotDuration string   `xml:"timeslot_duration"` // hh:mm
+	Url          string   `xml:"base_url"`          // https://indico.cern.ch/event/ID
 }

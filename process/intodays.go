@@ -27,7 +27,7 @@ import (
 )
 
 func IndicoToDays(data indicoinput.Apiresult) (retval [][]indicoinput.Contribution, err error) {
-	data.FillTimes()
+	data.Parse()
 	dayviderevent := IndicoToDayvider(data)
 	blocks := dayviderevent.Blockify()
 	refdate, err := dayvider.EndOfFirstDay(blocks)

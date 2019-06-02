@@ -28,7 +28,7 @@ import (
 )
 
 func DumpBlocks(data indicoinput.Apiresult, w io.Writer) {
-	data.FillTimes()
+	data.Parse()
 	event := IndicoToDayvider(data)
 	blocks := event.Blockify()
 

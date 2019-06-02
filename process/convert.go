@@ -30,7 +30,7 @@ import (
 func IndicoToDayvider(data indicoinput.Apiresult) dayvider.Event {
 	bookings := make([]dayvider.Booking, 0, len(data.Results.Conference.Contributions.Contributions))
 
-	data.FillTimes()
+	data.Parse()
 	for _, contrib := range data.Results.Conference.Contributions.Contributions {
 		if !contrib.TimeLess {
 			start := contrib.StartTime
@@ -51,7 +51,7 @@ func indicoDayToFahrplanDays(contribs [][]indicoinput.Contribution) (retval []fa
 }
 
 func FahrplanFromApi(data indicoinput.Apiresult) (retval fahrplanoutput.Schedule, err error) {
-	data.FillTimes()
+	data.Parse()
 
 	idays, err := IndicoToDays(data)
 	if err != nil {
@@ -61,6 +61,27 @@ func FahrplanFromApi(data indicoinput.Apiresult) (retval fahrplanoutput.Schedule
 	fdays := indicoDayToFahrplanDays(idays)
 
 	retval.Days = fdays
+
+	for i := range retval.Days {
+		retval.Days[i].Start = retval.Days[i].Start.In(data.Results.Conference.TimezoneLocation)
+		retval.Days[i].End = retval.Days[i].End.In(data.Results.Conference.TimezoneLocation)
+
+		for j := range retval.Days[i].Rooms {
+			for k := range retval.Days[i].Rooms[j].Events {
+				retval.Days[i].Rooms[j].Events[k].Date = retval.Days[i].Rooms[j].Events[k].Date.In(data.Results.Conference.TimezoneLocation)
+			}
+		}
+	}
+
+	retval.Conference.Days = len(fdays)
+	// retval.Conference.Start = idays[0][0].StartTime.Format("2006-01-02")
+	// retval.Conference.End = idays[len(idays)-1][len(idays[len(idays)-1])-1].EndTime.Format("2006-01-02")
+	retval.Conference.Start = data.Results.Conference.StartTime.In(data.Results.Conference.TimezoneLocation).Format("2006-01-02")
+	retval.Conference.End = data.Results.Conference.EndTime.In(data.Results.Conference.TimezoneLocation).Format("2006-01-02")
+	retval.Conference.SlotDuration = "00:10"
+	retval.Conference.Acronym = "CERN"
+	retval.Conference.Title = "IndicoImport"
+	retval.Conference.Url = fmt.Sprintf("https://indico.cern.ch/event/%d", data.Results.Conference.Id)
 	return
 }
 
