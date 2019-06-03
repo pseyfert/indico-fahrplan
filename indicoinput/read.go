@@ -26,7 +26,7 @@ import (
 	"time"
 )
 
-func Cernquery(eventid int, extravals map[string]string) (Apiresult, error) {
+func Cernquery(eventid int, extravals map[string]string, secret string) (Apiresult, error) {
 	var data Apiresult
 	c := http.Client{
 		Timeout: 600 * time.Second,
@@ -39,6 +39,10 @@ func Cernquery(eventid int, extravals map[string]string) (Apiresult, error) {
 	q.Add("detail", "contributions")
 	for k, v := range extravals {
 		q.Add(k, v)
+	}
+
+	if secret != "" {
+		// TODO: signing
 	}
 	req.URL.RawQuery = q.Encode()
 

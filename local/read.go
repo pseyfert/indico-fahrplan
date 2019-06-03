@@ -20,8 +20,13 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
+	"regexp"
+	"strconv"
+
+	"github.com/pseyfert/go-http-redirect-resolve/resolve"
 
 	"github.com/pseyfert/indico-fahrplan/indicoinput"
 	"github.com/pseyfert/indico-fahrplan/process"
@@ -29,28 +34,42 @@ import (
 
 func main() {
 	var eventid int
+	var short string
 	var local bool
 	var xmlFileName string
 	var apikey string
-	var signature string
+	var secret string
 	flag.IntVar(&eventid, "i", 708041, "indico.cern.ch event id")
 	flag.BoolVar(&local, "l", false, "run from local file")
 	flag.StringVar(&xmlFileName, "f", "./samples/indico.event.detail.contributions.xml", "default filename")
 	flag.StringVar(&apikey, "apikey", "", "indico api key (copy and paste from website)")
-	flag.StringVar(&signature, "signature", "", "indico signature (copy and paste from website)")
+	flag.StringVar(&secret, "secretkey", "", "indico secret key (copy and paste from website)")
+	flag.StringVar(&short, "shortened", "", "url shortened event name as in https://indico.cern.ch/e/<shortened>")
 	flag.Parse()
 
 	var data indicoinput.Apiresult
 	var err error
 	querymap := make(map[string]string)
-	if signature != "" {
-		querymap["signature"] = signature
-	}
 	if apikey != "" {
 		querymap["apikey"] = apikey
 	}
+	if short != "" {
+		resolved, err := resolve.Resolve(fmt.Sprintf("https://indico.cern.ch/e/%s", short))
+		if err != nil {
+			log.Fatalf("%v", err)
+		}
+		re := regexp.MustCompile("^https://indico.cern.ch/event/([0-9].*)/$")
+		if !re.MatchString(resolved) {
+			// error
+		}
+		eventid64, err := strconv.ParseInt(re.ReplaceAllString(resolved, "$1"), 10, 64)
+		if err != nil {
+			// error
+		}
+		eventid = int(eventid64)
+	}
 	if !local {
-		data, err = indicoinput.Cernquery(eventid, querymap)
+		data, err = indicoinput.Cernquery(eventid, querymap, secret)
 		if err != nil {
 			log.Fatalf("%v", err)
 		}

@@ -28,8 +28,8 @@ import (
 	"strconv"
 )
 
-func doit(w http.ResponseWriter, id int, querymap map[string]string) error {
-	data, err := indicoinput.Cernquery(id, querymap)
+func doit(w http.ResponseWriter, id int, querymap map[string]string, secret string) error {
+	data, err := indicoinput.Cernquery(id, querymap, secret)
 	if err != nil {
 		return err
 	}
@@ -41,13 +41,10 @@ func doit(w http.ResponseWriter, id int, querymap map[string]string) error {
 func handler(w http.ResponseWriter, r *http.Request) {
 	s := r.FormValue("event")
 	key := r.FormValue("apikey")
-	sign := r.FormValue("signature")
+	secret := r.FormValue("secret")
 	querymap := make(map[string]string)
 	if key != "" {
 		querymap["apikey"] = key
-	}
-	if sign != "" {
-		querymap["signature"] = sign
 	}
 	if s == "" {
 		http.Error(w, fmt.Errorf("event id missing").Error(), 500)
@@ -60,7 +57,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = doit(w, int(id), querymap)
+	err = doit(w, int(id), querymap, secret)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 	}
