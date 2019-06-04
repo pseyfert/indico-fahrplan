@@ -19,10 +19,14 @@
 package indicoinput
 
 import (
+	"crypto/hmac"
+	"crypto/sha1"
+	"encoding/hex"
 	"encoding/xml"
 	"fmt"
 	"net/http"
 	"os"
+	"sort"
 	"time"
 )
 
@@ -42,7 +46,17 @@ func Cernquery(eventid int, extravals map[string]string, secret string) (Apiresu
 	}
 
 	if secret != "" {
-		// TODO: signing
+		timestamp := time.Now().Unix()
+		q.Add("timestamp", fmt.Sprintf("%d", timestamp))
+		sortedkeys := make([]string, 0)
+		for k, _ := range q {
+			sortedkeys = append(sortedkeys, k)
+		}
+		sort.Strings(sortedkeys)
+		h := hmac.New(sha1.New, []byte(secret))
+		// TODO
+		// h.Write() // real message
+		hex.EncodeToString(h.Sum(nil))
 	}
 	req.URL.RawQuery = q.Encode()
 
