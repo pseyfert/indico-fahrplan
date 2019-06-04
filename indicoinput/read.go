@@ -26,7 +26,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"sort"
 	"time"
 )
 
@@ -44,21 +43,19 @@ func Cernquery(eventid int, extravals map[string]string, secret string) (Apiresu
 	for k, v := range extravals {
 		q.Add(k, v)
 	}
+	// needed?
+	// timestamp := time.Now().Unix()
+	// q.Add("timestamp", fmt.Sprintf("%d", timestamp))
 
-	if secret != "" {
-		timestamp := time.Now().Unix()
-		q.Add("timestamp", fmt.Sprintf("%d", timestamp))
-		sortedkeys := make([]string, 0)
-		for k, _ := range q {
-			sortedkeys = append(sortedkeys, k)
-		}
-		sort.Strings(sortedkeys)
-		h := hmac.New(sha1.New, []byte(secret))
-		// TODO
-		// h.Write() // real message
-		hex.EncodeToString(h.Sum(nil))
-	}
 	req.URL.RawQuery = q.Encode()
+	if secret != "" {
+		h := hmac.New(sha1.New, []byte(secret))
+		h.Write([]byte(req.URL.RequestURI()))
+		signature := hex.EncodeToString(h.Sum(nil))
+		q = req.URL.Query()
+		q.Add("signature", signature)
+		req.URL.RawQuery = q.Encode()
+	}
 
 	if err != nil {
 		return data, err
