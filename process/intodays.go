@@ -37,7 +37,7 @@ func IndicoToDays(data indicoinput.Apiresult) (retval [][]indicoinput.Contributi
 		return
 	}
 
-	days := 1 + int(blocks[len(blocks)-1].End.Sub(blocks[0].Start)/(24*time.Hour))
+	days := 1 + int(blocks[len(blocks)-1].End.Sub(refdate)/(24*time.Hour))
 
 	retval = make([][]indicoinput.Contribution, 0, days)
 	for i := 0; i < days; i += 1 {
