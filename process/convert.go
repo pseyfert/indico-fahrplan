@@ -111,10 +111,10 @@ func ConvertSingleContribution(c indicoinput.Contribution) (retval fahrplanoutpu
 func contributionsToRooms_singleDay(contribs []indicoinput.Contribution) []fahrplanoutput.Room {
 	rooms := make(map[string][]fahrplanoutput.Event)
 	for _, c := range contribs {
-		if _, found := rooms[c.Location]; !found {
-			rooms[c.Location] = make([]fahrplanoutput.Event, 0)
+		if _, found := rooms[c.CombinedLocation]; !found {
+			rooms[c.CombinedLocation] = make([]fahrplanoutput.Event, 0)
 		}
-		rooms[c.Location] = append(rooms[c.Location], ConvertSingleContribution(c))
+		rooms[c.CombinedLocation] = append(rooms[c.CombinedLocation], ConvertSingleContribution(c))
 	}
 
 	retval := make([]fahrplanoutput.Room, 0, len(rooms))

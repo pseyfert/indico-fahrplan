@@ -44,6 +44,8 @@ type Conference struct {
 	EndTime          time.Time
 	Timezone         string `xml:"timezone"`
 	TimezoneLocation *time.Location
+	Room             string `xml:"room"` // FIXME: validate with acat
+	Url              string `xml:"url"`  // FIXME: use and validate with acat
 }
 
 func (data *Apiresult) Parse() {
@@ -59,6 +61,11 @@ func (c *Contribution) Parse() {
 	} else {
 		c.TimeLess = true
 	}
+	if c.RoomFullname != "" {
+		c.CombinedLocation = c.Location + ": " + c.RoomFullname
+	} else {
+		c.CombinedLocation = c.Location
+	}
 }
 
 func (c *Conference) Parse() {
@@ -72,6 +79,9 @@ func (c *Conference) Parse() {
 	}
 	for i, _ := range c.Contributions.Contributions {
 		c.Contributions.Contributions[i].Parse()
+		if c.Contributions.Contributions[i].CombinedLocation == "" {
+			c.Contributions.Contributions[i].CombinedLocation = c.Room
+		}
 	}
 	location, err := time.LoadLocation(c.Timezone)
 	if err == nil {
@@ -88,15 +98,17 @@ type Contribution struct {
 	XMLName xml.Name `xml:"contribution"`
 	Id      int      `xml:"id,attr"`
 	// Start       time.Time `xml:"startDate"` // datetime
-	Start       string `xml:"startDate"` // datetime
-	StartTime   time.Time
-	EndTime     time.Time
-	TimeLess    bool
-	Duration    int      `xml:"duration"`
-	Title       string   `xml:"title"`
-	Location    string   `xml:"location"`
-	Description string   `xml:"description"`
-	Speakers    Speakers `xml:"speakers"`
+	Start            string `xml:"startDate"` // datetime
+	StartTime        time.Time
+	EndTime          time.Time
+	TimeLess         bool
+	Duration         int    `xml:"duration"`
+	Title            string `xml:"title"`
+	Location         string `xml:"location"`
+	RoomFullname     string `xml:"roomFullname"`
+	CombinedLocation string
+	Description      string   `xml:"description"`
+	Speakers         Speakers `xml:"speakers"`
 	// speakers/[]contributionparticipation
 	// primaryauthors/[]contributionparticipation
 	// folders/[]folder/attachments/[]attachment
