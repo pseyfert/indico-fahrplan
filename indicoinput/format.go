@@ -49,10 +49,10 @@ type Conference struct {
 }
 
 func (data *Apiresult) Parse() {
-	data.Results.Conference.Parse()
+	data.Results.Conference.parse()
 }
 
-func (c *Contribution) Parse() {
+func (c *Contribution) parse() {
 	t, err := time.Parse(time.RFC3339, c.Start)
 	if err == nil {
 		c.StartTime = t
@@ -68,7 +68,7 @@ func (c *Contribution) Parse() {
 	}
 }
 
-func (c *Conference) Parse() {
+func (c *Conference) parse() {
 	t, err := time.Parse(time.RFC3339, c.Start)
 	if err == nil {
 		c.StartTime = t
@@ -78,7 +78,7 @@ func (c *Conference) Parse() {
 		c.EndTime = t
 	}
 	for i, _ := range c.Contributions.Contributions {
-		c.Contributions.Contributions[i].Parse()
+		c.Contributions.Contributions[i].parse()
 		if c.Contributions.Contributions[i].CombinedLocation == "" {
 			c.Contributions.Contributions[i].CombinedLocation = c.Room
 		}
