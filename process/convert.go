@@ -104,6 +104,13 @@ func ConvertSingleContribution(c indicoinput.Contribution) (retval fahrplanoutpu
 	retval.Duration = fmtDuration(time.Minute * time.Duration(c.Duration))
 	retval.Title = c.Title
 	retval.Abstract = c.Description
+	if c.Track != "" && c.Session != c.Track {
+		retval.Track = c.Track + "(" + c.Session + ")"
+	} else if c.Track != "" {
+		retval.Track = c.Track
+	} else if c.Session != "" {
+		retval.Track = c.Session
+	}
 
 	return
 }

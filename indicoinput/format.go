@@ -116,6 +116,8 @@ type Contribution struct {
 	RoomFullname     string `xml:"roomFullname"`
 	CombinedLocation string
 	Description      string   `xml:"description"`
+	Session          string   `xml:"session"`
+	Track            string   `xml:"track"`
 	Speakers         Speakers `xml:"speakers"`
 	// speakers/[]contributionparticipation
 	// primaryauthors/[]contributionparticipation
@@ -128,7 +130,7 @@ type Speakers struct {
 }
 type Contributionparticipation struct {
 	XMLName    xml.Name `xml:"contributionparticipation"`
-	Last_name  string
-	First_name string
-	FullName   string
+	Last_name  string   `xml:"last_name"`
+	First_name string   `xml:"first_name"`
+	FullName   string   `xml:"fullname"`
 }
