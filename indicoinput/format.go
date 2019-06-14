@@ -78,17 +78,16 @@ func (c *Conference) parse() {
 		c.EndTime = t
 	}
 
-	resolvedname := c.Room // fallback
 	for i, _ := range c.Contributions.Contributions {
 		c.Contributions.Contributions[i].parse()
 		if c.Contributions.Contributions[i].RoomFullname == c.Room {
-			resolvedname = c.Contributions.Contributions[i].CombinedLocation
+			c.Room = c.Contributions.Contributions[i].CombinedLocation
 			break
 		}
 	}
 	for i, _ := range c.Contributions.Contributions {
 		if c.Contributions.Contributions[i].CombinedLocation == "" {
-			c.Contributions.Contributions[i].CombinedLocation = resolvedname
+			c.Contributions.Contributions[i].CombinedLocation = c.Room
 		}
 	}
 
