@@ -77,12 +77,21 @@ func (c *Conference) parse() {
 	if err == nil {
 		c.EndTime = t
 	}
+
+	resolvedname := c.Room // fallback
 	for i, _ := range c.Contributions.Contributions {
 		c.Contributions.Contributions[i].parse()
-		if c.Contributions.Contributions[i].CombinedLocation == "" {
-			c.Contributions.Contributions[i].CombinedLocation = c.Room
+		if c.Contributions.Contributions[i].RoomFullname == c.Room {
+			resolvedname = c.Contributions.Contributions[i].CombinedLocation
+			break
 		}
 	}
+	for i, _ := range c.Contributions.Contributions {
+		if c.Contributions.Contributions[i].CombinedLocation == "" {
+			c.Contributions.Contributions[i].CombinedLocation = resolvedname
+		}
+	}
+
 	location, err := time.LoadLocation(c.Timezone)
 	if err == nil {
 		c.TimezoneLocation = location
