@@ -61,18 +61,35 @@ type Event struct {
 	Title       string      `xml:"title"`
 	Track       string      `xml:"track"`
 	Abstract    string      `xml:"abstract"`
-	Attachments Attachments `xml:"attachments"`
+	Attachments Attachments `xml:"links"`
+	// Attachments Attachments `xml:"attachments"`
+	// subtitle, description
+	Persons Persons `xml:"persons"`
+}
+
+type Persons struct {
+	XMLName xml.Name `xml:"persons"`
+	Persons []Person `xml:"person"`
+}
+
+type Person struct {
+	XMLName xml.Name `xml:"person"`
+	Id      int      `xml:"id,attr"`
+	Name    string   `xml:",chardata"`
 }
 
 type Attachments struct {
-	XMLName     xml.Name     `xml:"attachments"`
-	Attachments []Attachment `xml:"attachment"`
+	XMLName     xml.Name     `xml:"links"`
+	Attachments []Attachment `xml:"link"`
+	// XMLName     xml.Name     `xml:"attachments"`
+	// Attachments []Attachment `xml:"attachment"`
 }
 
 type Attachment struct {
-	XMLName xml.Name `xml:"attachment"`
-	Href    string   `xml:"href,attr"`
-	Name    string   `xml:",chardata"`
+	XMLName xml.Name `xml:"link"`
+	// XMLName xml.Name `xml:"attachment"`
+	Href string `xml:"href,attr"`
+	Name string `xml:",chardata"`
 }
 
 type Conference struct {

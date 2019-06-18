@@ -112,6 +112,34 @@ func ConvertSingleContribution(c indicoinput.Contribution) (retval fahrplanoutpu
 		retval.Track = c.Session
 	}
 
+	if len(c.Folders.Folders) != 0 {
+		retval.Attachments.Attachments = make([]fahrplanoutput.Attachment, 0, len(c.Folders.Folders))
+		for _, f := range c.Folders.Folders {
+			for _, a := range f.Attachments.Attachments {
+				var newattachment fahrplanoutput.Attachment
+				newattachment.Href = a.Url
+				if a.Title != "" && a.Title != a.Filename && a.Filename != "" {
+					newattachment.Name = a.Title + " (" + a.Filename + ")"
+				} else if a.Title != "" {
+					newattachment.Name = a.Title
+				} else if a.Filename != "" {
+					newattachment.Name = a.Filename
+				} else {
+					newattachment.Name = "unnamed attachment"
+				}
+				retval.Attachments.Attachments = append(retval.Attachments.Attachments, newattachment)
+			}
+		}
+	}
+
+	if len(c.Speakers.Contributionparticipation) > 0 {
+		retval.Persons.Persons = make([]fahrplanoutput.Person, len(c.Speakers.Contributionparticipation))
+		for i, p_in := range c.Speakers.Contributionparticipation {
+			retval.Persons.Persons[i].Id = p_in.Id
+			retval.Persons.Persons[i].Name = p_in.FullName
+		}
+	}
+
 	return
 }
 

@@ -119,9 +119,37 @@ type Contribution struct {
 	Session          string   `xml:"session"`
 	Track            string   `xml:"track"`
 	Speakers         Speakers `xml:"speakers"`
+	Folders          Folders  `xml:"folders"`
 	// speakers/[]contributionparticipation
 	// primaryauthors/[]contributionparticipation
 	// folders/[]folder/attachments/[]attachment
+}
+
+type Folders struct {
+	XMLName xml.Name `xml:"folders"`
+	Folders []Folder `xml:"folder"`
+}
+
+type Folder struct {
+	XMLName     xml.Name    `xml:"folder"`
+	Attachments Attachments `xml:"attachments"`
+}
+
+type Attachments struct {
+	XMLName     xml.Name     `xml:"attachments"`
+	Attachments []Attachment `xml:"attachment"`
+}
+
+type Attachment struct {
+	XMLName xml.Name `xml:"attachment"`
+	// modified_dt
+	// content_type
+	// type
+	// size
+	Description string `xml:"description"`
+	Title       string `xml:"title"`
+	Url         string `xml:"download_url"`
+	Filename    string `xml:"filename"`
 }
 
 type Speakers struct {
@@ -132,5 +160,7 @@ type Contributionparticipation struct {
 	XMLName    xml.Name `xml:"contributionparticipation"`
 	Last_name  string   `xml:"last_name"`
 	First_name string   `xml:"first_name"`
-	FullName   string   `xml:"fullname"`
+	FullName   string   `xml:"fullName"`
+	// db_id
+	Id int `xml:"person_id"`
 }
