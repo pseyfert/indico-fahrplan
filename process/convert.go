@@ -113,7 +113,8 @@ func ConvertSingleContribution(c indicoinput.Contribution) (retval fahrplanoutpu
 	}
 
 	if len(c.Folders.Folders) != 0 {
-		retval.Attachments.Attachments = make([]fahrplanoutput.Attachment, 0, len(c.Folders.Folders))
+		retval.Attachments.Attachments = make([]fahrplanoutput.Attachment, 0, 1+len(c.Folders.Folders))
+		retval.Attachments.Attachments = append(retval.Attachments.Attachments, fahrplanoutput.Attachment{Href: c.Url, Name: "Contribution"})
 		for _, f := range c.Folders.Folders {
 			for _, a := range f.Attachments.Attachments {
 				var newattachment fahrplanoutput.Attachment

@@ -120,6 +120,7 @@ type Contribution struct {
 	Track            string   `xml:"track"`
 	Speakers         Speakers `xml:"speakers"`
 	Folders          Folders  `xml:"folders"`
+	Url              string   `xml:"url"`
 	// speakers/[]contributionparticipation
 	// primaryauthors/[]contributionparticipation
 	// folders/[]folder/attachments/[]attachment
