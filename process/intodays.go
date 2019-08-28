@@ -55,7 +55,7 @@ func IndicoToDays(data indicoinput.Apiresult) (retval [][]indicoinput.Contributi
 		if cdate < 0 || cdate >= days {
 			err = fmt.Errorf("could not assign contribution to day\n"+
 				"The derived day is %d\n"+
-				"The event has %d days\n",
+				"The event has %d days\n"+
 				"%s\n",
 				cdate+1, days, blockinfo(blocks, contrib))
 			return
