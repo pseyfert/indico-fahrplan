@@ -42,10 +42,11 @@ func IndicoToDayvider(data indicoinput.Apiresult) dayvider.Event {
 	return event
 }
 
-func indicoDayToFahrplanDays(contribs [][]indicoinput.Contribution) (retval []fahrplanoutput.Day) {
+func indicoDayToFahrplanDays(contribs [][]indicoinput.Contribution, refdate time.Time) (retval []fahrplanoutput.Day) {
 	retval = make([]fahrplanoutput.Day, 0, len(contribs))
-	for _, cs := range contribs {
-		retval = append(retval, ConvertSingleDay(cs))
+	for i, cs := range contribs {
+		daystarts := refdate.Add(24 * time.Duration(i) * time.Hour)
+		retval = append(retval, ConvertSingleDay(cs, daystarts))
 	}
 	return
 }
@@ -53,12 +54,12 @@ func indicoDayToFahrplanDays(contribs [][]indicoinput.Contribution) (retval []fa
 func FahrplanFromApi(data indicoinput.Apiresult) (retval fahrplanoutput.Schedule, err error) {
 	data.Parse()
 
-	idays, err := IndicoToDays(data)
+	idays, refdate, err := IndicoToDays(data)
 	if err != nil {
 		return
 	}
 
-	fdays := indicoDayToFahrplanDays(idays)
+	fdays := indicoDayToFahrplanDays(idays, refdate)
 
 	retval.Days = fdays
 
@@ -161,9 +162,15 @@ func contributionsToRooms_singleDay(contribs []indicoinput.Contribution) []fahrp
 	return retval
 }
 
-func ConvertSingleDay(contribs []indicoinput.Contribution) (retval fahrplanoutput.Day) {
+func ConvertSingleDay(contribs []indicoinput.Contribution, refdate time.Time) (retval fahrplanoutput.Day) {
 	retval.Rooms = contributionsToRooms_singleDay(contribs)
 
+	// use dayvider's days if no contribution available
+	if len(contribs) < 1 {
+		retval.Start = refdate
+		retval.End = refdate.Add(24 * time.Hour)
+		return
+	}
 	// sane default, fixable later
 	retval.Start = contribs[0].StartTime
 	retval.End = contribs[0].EndTime

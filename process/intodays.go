@@ -26,11 +26,11 @@ import (
 	"github.com/pseyfert/indico-fahrplan/indicoinput"
 )
 
-func IndicoToDays(data indicoinput.Apiresult) (retval [][]indicoinput.Contribution, err error) {
+func IndicoToDays(data indicoinput.Apiresult) (retval [][]indicoinput.Contribution, refdate time.Time, err error) {
 	data.Parse()
 	dayviderevent := IndicoToDayvider(data)
 	blocks := dayviderevent.Blockify()
-	refdate, err := dayvider.EndOfFirstDay(blocks)
+	refdate, err = dayvider.EndOfFirstDay(blocks)
 	refdate = refdate.Add(-24 * time.Hour)
 
 	if err != nil {

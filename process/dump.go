@@ -43,7 +43,7 @@ func DumpBlocks(data indicoinput.Apiresult, w io.Writer) {
 
 	fmt.Fprintf(w, "\n\nFirst day should end at %s\n", eod.String())
 
-	days, err := IndicoToDays(data)
+	days, _, err := IndicoToDays(data)
 	if err != nil {
 		fmt.Fprintf(w, "unexpected error: %v\n", err)
 		return
