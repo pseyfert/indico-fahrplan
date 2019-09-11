@@ -80,6 +80,8 @@ func (c *Conference) parse() {
 
 	for i, _ := range c.Contributions.Contributions {
 		c.Contributions.Contributions[i].parse()
+	}
+	for i, _ := range c.Contributions.Contributions {
 		if c.Contributions.Contributions[i].RoomFullname == c.Room {
 			c.Room = c.Contributions.Contributions[i].CombinedLocation
 			break
